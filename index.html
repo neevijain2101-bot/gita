@@ -137,6 +137,7 @@ body.no-sa .sa, body.no-sa .iast { display: none; }
 .context { margin: 0; font-size: 15px; color: var(--muted); background: rgba(218, 211, 250, .45); border-radius: 8px; padding: 8px 12px; }
 .context b { color: var(--krishna); font-weight: 600; }
 .teaching { margin: 0; max-width: 68ch; line-height: 1.7; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+.offline-note { margin: 0; background: var(--accent-soft); border: 1px solid #E8B23A; border-radius: 10px; padding: 12px 14px; font-size: 15.5px; }
 .signoff { margin: 4px 0 0; font-family: var(--font-display); font-size: 20px; color: var(--lotus); }
 .why { display: block; color: var(--muted); font-size: 15px; margin-top: 2px; }
 .why b { font-weight: 600; color: var(--peacock); }
@@ -1153,6 +1154,14 @@ function offlineView(turns, related) {
     src.className = "source";
     src.textContent = L.source;
     ex.querySelector(".answer").prepend(src);
+    if (!turn.picked) {
+      const note = document.createElement("p");
+      note.className = "offline-note";
+      note.textContent = turn.a.lang === "hinglish"
+        ? "Dhyaan dein: offline guide aapki exact sthiti nahi padh sakti. Usne apne 21 general topics mein se sabse kareebi topic chuna hai, isliye ye jawaab aapki baat ke details (log, ghatna, sawaal) par baat nahi karega. Aapki sthiti ke liye likha gaya poora jawaab paane ke liye Claude mein sign in karke is page ka claude.ai version kholiye, ya page ke neeche API key daaliye."
+        : "Please note: the offline guide can't read your exact situation. It has picked the closest of its 21 general topics, so this answer won't address the details of what you wrote. For an in-depth answer written for your situation, open the claude.ai version of this page while signed in to Claude, or add an API key at the bottom of this page.";
+      ex.querySelector(".answer").prepend(note);
+    }
     t.appendChild(ex);
   });
   if (related && related.length) {
