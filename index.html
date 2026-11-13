@@ -134,6 +134,11 @@ body.no-sa .sa, body.no-sa .iast { display: none; }
 .sa { color: #2E2873; font-family: var(--font-sa); font-size: 21px; line-height: 1.7; margin: 0; white-space: pre-line; }
 .iast { font-style: italic; color: var(--muted); font-size: 15px; line-height: 1.55; margin: 0; white-space: pre-line; }
 .meaning { margin: 0; }
+.context { margin: 0; font-size: 15px; color: var(--muted); background: rgba(218, 211, 250, .45); border-radius: 8px; padding: 8px 12px; }
+.context b { color: var(--krishna); font-weight: 600; }
+.teaching { margin: 0; max-width: 68ch; line-height: 1.7; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+.why { display: block; color: var(--muted); font-size: 15px; margin-top: 2px; }
+.why b { font-weight: 600; color: var(--peacock); }
 .applies { margin: 0; font-size: 16px; padding-top: 10px; border-top: 1px dashed var(--line); }
 .applies strong { font-weight: 600; }
 .unverified { font-size: 13.5px; color: var(--danger); }
@@ -571,34 +576,39 @@ function verify(ref, opening) {
 const DEV = "०१२३४५६७८९";
 const devNum = s => String(s).replace(/\d/g, d => DEV[d]);
 
-const INSTRUCTIONS = `You are a counsellor whose only source is the Bhagavad Gita. A person will describe a situation or ask a question. Answer from the Gita and nothing else.
+const INSTRUCTIONS = `You are a counsellor whose only source is the Bhagavad Gita. A person will describe a situation or ask a question. Give them a full, descriptive answer drawn from the Gita and nothing else.
 
-Rules:
-1. Every idea must come from the text of the Bhagavad Gita itself. Do not draw on other scriptures (Upanishads, the rest of the Mahabharata, Puranas, or any other tradition), later commentators, modern psychology, self-help, or your own opinions. If the Gita does not speak to part of the situation, say so in "limits" instead of filling the gap.
-2. Cite 2 to 4 verses that speak most directly to this situation. Prefer the teachings Krishna speaks. If you cite Arjuna's or Sanjaya's words, it is only to mirror the person's situation (for example, Arjuna's despair in 1.28 to 1.47 or 2.4 to 2.8), and say whose words they are.
-3. Numbering: use the 701-verse edition in which chapter 13 has 35 verses and Arjuna's question "prakṛtiṃ puruṣaṃ caiva" is 13.1 (so "idaṃ śarīraṃ kaunteya" is 13.2). Verses per chapter: ${Object.entries(COUNTS).map(([c, n]) => c + ":" + n).join(", ")}. Only cite a verse you are sure of.
-4. For each verse give "opening_words": the first two or three words of the verse in IAST, exactly as they appear in the Sanskrit (not the speaker line). They are checked against the Sanskrit text, so be exact.
-5. "meaning": your own faithful plain-English rendering of the verse, close to the Sanskrit, one or two sentences. Do not reproduce any published translation.
-6. Advice must be concrete and specific to this person's situation. Tie every step to a verse you cited.
-7. Write plainly and warmly, addressing the person as "you". No preaching, no filler.
-8. If the person mentions a risk of harming themselves or someone else, or a medical or legal emergency, still answer from the Gita but set "care_note" to one short sentence urging them to reach a trusted person or a local emergency or crisis line now. Otherwise "care_note" is "".
-9. If the message is not a question or situation the Gita can speak to (trivia, code, maths), set "in_scope" to false, leave "verses" and "steps" empty, and use "gita_view" to say in one or two sentences what kind of question you can help with.
-10. In follow-ups, stay consistent with your earlier answers; you may cite new verses.
-11. Language: reply in the same language and script the person used in their latest message, for every text value. If they write Hindi in Roman letters (Hinglish, for example "mujhe result ki bahut tension ho rahi hai"), reply in natural Roman-script Hinglish the way they write: simple Hindi in English letters, keeping English words people normally use (exam, result, job, tension); never switch to Devanagari for them, and address them as "aap". If they write Hindi in Devanagari, reply in Devanagari Hindi. Otherwise reply in English. This applies to "meaning" too: render the verse in that language. "ref" and "opening_words" stay exactly as specified above. Set "lang" to "en", "hinglish" or "hi" to match.
+Rules about the source:
+1. Every idea, explanation and suggestion must come from the text of the Bhagavad Gita itself: Krishna's teachings, the dialogue with Arjuna, and the Gita's own concepts (such as karma yoga, svadharma, the sthitaprajña or person of steady wisdom, the three guṇas, abhyāsa and vairāgya, bhakti, śraddhā, the undying self). Explain these concepts in plain words when you use them.
+2. Do not draw on anything outside the Gita: no other scriptures (Upanishads, the rest of the Mahabharata, Ramayana, Puranas, or any other tradition), no commentators or gurus (Shankara, Prabhupada, Vivekananda or anyone else), no modern psychology, therapy, science, self-help or productivity techniques, and no personal opinions. If a practical step is suggested, it must be something the Gita itself teaches (for example moderation in food and sleep from 6.16 and 6.17, or bringing the wandering mind back from 6.26).
+3. Never claim the Gita says something it does not. If the Gita does not speak to part of the situation, say so plainly in "limits" instead of filling the gap.
+4. Cite 3 to 5 verses that speak most directly to this situation. Prefer the teachings Krishna speaks. If you cite Arjuna's or Sanjaya's words, it is to show the person that their situation mirrors Arjuna's (for example Arjuna's despair in 1.28 to 1.47 or 2.4 to 2.8), and you say whose words they are.
+5. Numbering: use the 701-verse edition in which chapter 13 has 35 verses and Arjuna's question "prakṛtiṃ puruṣaṃ caiva" is 13.1 (so "idaṃ śarīraṃ kaunteya" is 13.2). Verses per chapter: ${Object.entries(COUNTS).map(([c, n]) => c + ":" + n).join(", ")}. Only cite a verse you are sure of.
+6. For each verse give "opening_words": the first two or three words of the verse in IAST, exactly as they appear in the Sanskrit (not the speaker line). They are checked against the Sanskrit text, so be exact.
+7. "meaning": your own faithful rendering of the verse, close to the Sanskrit, one or two sentences. Do not reproduce any published translation.
+
+Rules about the answer:
+8. Be descriptive and specific to this person. "gita_view" frames their situation the way the Gita would (3 to 5 sentences). For each verse, "context" says where it sits in the Gita's story: who is speaking, to whom, and what prompted it (1 or 2 sentences), and "applies" explains in 2 or 3 sentences how the verse speaks to this person's situation. "teaching" is the heart of the answer: one rich paragraph of 6 to 9 sentences that weaves the cited verses together into the Gita's answer for this person, explaining what the Gita sees happening, what it asks of them, and why, using only the Gita's own reasoning and referring to verses by number.
+9. Give 4 to 6 steps. Each "do" is one concrete action for this person's situation, and each "why" is one sentence explaining how that action follows from the cited verse.
+10. Write warmly and clearly, addressing the person as "you". No preaching and no filler.
+11. If the person mentions a risk of harming themselves or someone else, or a medical or legal emergency, still answer from the Gita but set "care_note" to one short sentence urging them to reach a trusted person or a local emergency or crisis line now. Otherwise "care_note" is "".
+12. If the message is not a question or situation the Gita can speak to (trivia, code, maths), set "in_scope" to false, leave "verses" and "steps" empty, and use "gita_view" to say in one or two sentences what kind of question you can help with.
+13. In follow-ups, stay consistent with your earlier answers; you may cite new verses, and the follow-up answer should be just as full.
+14. Language: reply in the same language and script the person used in their latest message, for every text value. If they write Hindi in Roman letters (Hinglish, for example "mujhe result ki bahut tension ho rahi hai"), reply in natural Roman-script Hinglish the way they write: simple Hindi in English letters, keeping English words people normally use (exam, result, job, tension); never switch to Devanagari for them, and address them as "aap". If they write Hindi in Devanagari, reply in Devanagari Hindi. Otherwise reply in English. This applies to "meaning" and "context" too. "ref" and "opening_words" stay exactly as specified above. Set "lang" to "en", "hinglish" or "hi" to match.
 
 Return only a JSON object with exactly these keys:
 {
   "in_scope": true,
   "lang": "en",
   "title": "the situation in 4 to 8 words",
-  "gita_view": "2 to 4 sentences on how the Gita frames this situation",
-  "verses": [{"ref": "2.47", "opening_words": "karmaṇy evādhikāras te", "meaning": "...", "applies": "1 or 2 sentences connecting this verse to the person's situation"}],
-  "steps": [{"do": "one concrete action, one sentence", "ref": "2.48"}],
+  "gita_view": "3 to 5 sentences",
+  "verses": [{"ref": "2.47", "opening_words": "karmaṇy evādhikāras te", "context": "...", "meaning": "...", "applies": "..."}],
+  "teaching": "one paragraph of 6 to 9 sentences",
+  "steps": [{"do": "...", "why": "...", "ref": "2.48"}],
   "reflection": "one question for the person to sit with, drawn from a cited verse",
   "limits": "",
   "care_note": ""
-}
-Give 3 to 5 steps.`;
+}`;
 
 const EXAMPLES = [
   "Mujhe result ki bahut tension ho rahi hai, neend nahi aati.",
@@ -663,6 +673,8 @@ function renderAnswer(a, idx) {
   if (a.care_note) html += `<p class="care">${esc(a.care_note)}</p>`;
   if (a.gita_view) html += `<p class="view">${esc(a.gita_view)}</p>`;
   const verses = Array.isArray(a.verses) ? a.verses : [];
+  const seenCh = new Set();
+  const ctxLang = a.lang === "hinglish" ? "hinglish" : "en";
   if (verses.length) {
     html += `<div class="section-label">${L.verses}</div><div class="verses">`;
     verses.forEach((cv, i) => {
@@ -680,18 +692,20 @@ function renderAnswer(a, idx) {
         </div>
         ${r.ok ? `<p class="sa" lang="sa">${esc(x.sa)} ॥ ${devNum(x.c + "." + x.v)} ॥</p><p class="iast" lang="sa-Latn">${esc(x.tr)}</p>`
                : `<span class="unverified">${esc(L.unverified)}</span>`}
+        ${(() => { let ctx = cv.context || ""; if (!ctx && r.ok && !seenCh.has(x.c)) ctx = CH_CONTEXT[ctxLang][x.c] || ""; if (r.ok) seenCh.add(x.c); return ctx ? `<p class="context"><b>${L.inGita}</b> ${esc(ctx)}</p>` : ""; })()}
         <p class="meaning">${esc(cv.meaning)}</p>
         ${cv.applies ? `<p class="applies"><strong>${L.forYou}</strong> ${esc(cv.applies)}</p>` : ""}
       </article>`;
     });
     html += `</div>`;
   }
+  if (a.teaching) html += `<div class="section-label">${L.teaching}</div><p class="teaching">${esc(a.teaching)}</p>`;
   const steps = Array.isArray(a.steps) ? a.steps : [];
   if (steps.length) {
     html += `<div class="section-label">${L.steps}</div><ol class="steps">`;
     for (const s of steps) {
       const ref = refMap[String(s.ref || "").trim()] || String(s.ref || "").trim();
-      html += `<li><span>${esc(s.do)}${ref ? `<button type="button" class="refchip" data-target="v-${idx}-${esc(ref.replace(".", "-"))}" aria-label="Go to verse ${esc(ref)}">${esc(ref)}</button>` : ""}</span></li>`;
+      html += `<li><span>${esc(s.do)}${ref ? `<button type="button" class="refchip" data-target="v-${idx}-${esc(ref.replace(".", "-"))}" aria-label="Go to verse ${esc(ref)}">${esc(ref)}</button>` : ""}${s.why ? `<span class="why"><b>${L.why}</b> ${esc(s.why)}</span>` : ""}</span></li>`;
     }
     html += `</ol>`;
   }
@@ -754,9 +768,12 @@ function answerAsText(turn) {
     const ref = r.ok ? r.verse.c + "." + r.verse.v : cv.ref;
     lines.push(`Bhagavad Gita ${ref}`);
     if (r.ok) lines.push(r.verse.sa, r.verse.tr);
+    if (cv.context) lines.push(L.inGita + " " + cv.context);
     lines.push(cv.meaning, cv.applies ? L.forYou + " " + cv.applies : "", "");
   }
-  if ((a.steps || []).length) { lines.push(L.steps + ":"); a.steps.forEach((s, i) => lines.push(`${i + 1}. ${s.do} (${s.ref})`)); lines.push(""); }
+  if (a.teaching) lines.push(L.teaching + ":", a.teaching, "");
+  if ((a.steps || []).length) { lines.push(L.steps + ":"); a.steps.forEach((s, i) => lines.push(`${i + 1}. ${s.do} (${s.ref})` + (s.why ? `
+   ${L.why} ${s.why}` : ""))); lines.push(""); }
   if (a.reflection) lines.push(L.reflect + ": " + a.reflection);
   return lines.filter((l, i, arr) => !(l === "" && arr[i - 1] === "")).join("\n");
 }
@@ -769,6 +786,7 @@ function topicAnswer(tp, lang) {
     in_scope: true, lang: H ? "hinglish" : "en", title: H ? H.title : tp.title, gita_view: H ? H.view : tp.view,
     verses: tp.verses.map(([ref, why], i) => ({ ref, opening_words: MEANINGS[ref][0], meaning: H ? MEANINGS_HI[ref] : MEANINGS[ref][1], applies: H ? H.why[i] : why })),
     steps: tp.steps.map(([d, ref], i) => ({ do: H ? H.steps[i] : d, ref })),
+    teaching: (TEACH[H ? "hinglish" : "en"] || {})[tp.id] || "",
     reflection: H ? H.reflect : tp.reflect, limits: "", care_note: ""
   };
 }
@@ -1000,6 +1018,104 @@ const TOPICS_HI = {
 for (const t of TOPICS) if (TOPICS_HI[t.id]) t.keys += " " + TOPICS_HI[t.id].keys;
 
 for (const w of HINGLISH_MARKERS) STOP.add(w);
+
+// ---------- Descriptive content: chapter context and full teachings (Gita only) ----------
+const CH_CONTEXT = {
+  en: {
+    1: "Chapter 1 sets the scene: on the battlefield of Kurukshetra, Arjuna sees his own relatives in both armies and collapses in grief and confusion.",
+    2: "In chapter 2, Arjuna asks Krishna for guidance, and Krishna begins his teaching: the self does not die, and one should act without attachment to results.",
+    3: "In chapter 3, Arjuna asks why he must act at all if knowledge is higher; Krishna explains that no one can avoid action, so act selflessly and set an example.",
+    4: "In chapter 4, Krishna explains the ancient roots of this teaching and how knowledge frees a person from the bondage of action.",
+    5: "In chapter 5, Krishna compares giving up action with acting without attachment, and says acting without attachment is better.",
+    6: "In chapter 6, Krishna teaches meditation and self-mastery: how to steady the restless mind through practice and detachment.",
+    7: "In chapter 7, Krishna describes his own nature and the kinds of people who turn to him.",
+    8: "In chapter 8, Krishna answers Arjuna's questions about the imperishable and about what happens at the time of death.",
+    9: "In chapter 9, Krishna reveals the 'royal secret': simple, loving devotion reaches him, and he cares for those who depend on him.",
+    10: "In chapter 10, Krishna describes his glories so that Arjuna can recognise the divine in the world.",
+    11: "In chapter 11, Krishna shows Arjuna his universal form, and Arjuna sees that events are far larger than his own role in them.",
+    12: "In chapter 12, Krishna describes the devotee who is dear to him: free of hatred, even-minded and kind.",
+    13: "In chapter 13, Krishna distinguishes the body, 'the field', from the self that knows it.",
+    14: "In chapter 14, Krishna explains the three guṇas (sattva, rajas and tamas) that shape every mind and action.",
+    15: "In chapter 15, Krishna describes the eternal tree of worldly life and the Supreme Person beyond it.",
+    16: "In chapter 16, Krishna contrasts divine and demonic qualities, and names desire, anger and greed as gates to ruin.",
+    17: "In chapter 17, Krishna explains how faith, food, sacrifice, discipline and giving take different forms under the three guṇas.",
+    18: "Chapter 18 is Krishna's closing summary: true renunciation, doing one's own duty, and his final assurance to Arjuna."
+  },
+  hinglish: {
+    1: "Adhyay 1 drishya rachta hai: Kurukshetra ke maidan mein Arjun dono senaon mein apne rishtedaaron ko dekhte hain aur dukh aur uljhan mein toot jaate hain.",
+    2: "Adhyay 2 mein Arjun Krishna se margdarshan maangte hain, aur Krishna updesh shuru karte hain: aatma nahi marti, aur karm phal se lagaav ke bina karna chahiye.",
+    3: "Adhyay 3 mein Arjun poochhte hain ki agar gyaan shreshth hai toh karm kyun karein; Krishna samjhaate hain ki karm se koi bach nahi sakta, isliye nishkaam karm karo aur udaharan bano.",
+    4: "Adhyay 4 mein Krishna is gyaan ki puraani parampara bataate hain, aur ye ki gyaan karm ke bandhan se kaise mukt karta hai.",
+    5: "Adhyay 5 mein Krishna karm chhodne ki tulna aasakti ke bina karm karne se karte hain, aur aasakti ke bina karm ko behtar bataate hain.",
+    6: "Adhyay 6 mein Krishna dhyaan aur aatm-sanyam sikhaate hain: abhyaas aur vairagya se chanchal mann ko kaise sthir karein.",
+    7: "Adhyay 7 mein Krishna apne swaroop aur un logon ka varnan karte hain jo unki sharan mein aate hain.",
+    8: "Adhyay 8 mein Krishna akshar (avinaashi) aur mrityu ke samay kya hota hai, is par Arjun ke prashnon ka uttar dete hain.",
+    9: "Adhyay 9 mein Krishna 'raaj-rahasya' bataate hain: saral, prem bhari bhakti unhe paati hai, aur woh unka khayaal rakhte hain jo un par nirbhar hain.",
+    10: "Adhyay 10 mein Krishna apni vibhootiyan bataate hain taaki Arjun duniya mein divya ko pehchaan sakein.",
+    11: "Adhyay 11 mein Krishna Arjun ko apna vishwaroop dikhaate hain, aur Arjun dekhte hain ki ghatnaayein unki apni bhoomika se kahin badi hain.",
+    12: "Adhyay 12 mein Krishna apne priya bhakt ke gun bataate hain: dvesh se mukt, samaan mann waala aur dayaalu.",
+    13: "Adhyay 13 mein Krishna shareer, yaani 'kshetra', aur use jaanne waali aatma ke beech ka antar samjhaate hain.",
+    14: "Adhyay 14 mein Krishna teen gun (sattva, rajas aur tamas) samjhaate hain jo har mann aur karm ko aakaar dete hain.",
+    15: "Adhyay 15 mein Krishna sansaar roopi amar vriksh aur uske paar Purushottam ka varnan karte hain.",
+    16: "Adhyay 16 mein Krishna daivi aur aasuri gunon ki tulna karte hain, aur kaam, krodh aur lobh ko naash ke darwaaze bataate hain.",
+    17: "Adhyay 17 mein Krishna samjhaate hain ki shraddha, bhojan, yagya, tap aur daan teen gunon ke hisaab se kaise alag-alag roop lete hain.",
+    18: "Adhyay 18 Krishna ka antim saar hai: sachcha tyaag, apna kartavya nibhaana, aur Arjun ko unka aakhri aashwaasan."
+  }
+};
+
+const TEACH = {
+  en: {
+    "results-anxiety": "Arjuna's crisis on the battlefield is, at its root, anxiety about outcomes: he imagines the results of the war and freezes. Krishna does not promise him a good result. Instead he moves Arjuna's attention to the one thing he controls, his own action, and asks him to offer it without clinging to what comes of it (2.47). This is karma yoga, the yoga of action. The evenness Krishna describes in 2.48 is not indifference; it is being so absorbed in doing your part well that success and failure lose their power to shake you. And the feelings that arise while you wait, Krishna says in 2.14, are like heat and cold: real, but passing, and meant to be endured rather than obeyed.",
+    "fear-failure": "In the Gita, Arjuna's refusal to act sounds like wisdom, but Krishna names it plainly as faint-heartedness (2.3). His remedy is to remove the fear's foundation. In 2.40 he says that on this path no effort is lost and even a little practice protects from great fear, and in 6.40 he assures Arjuna that one who does good never comes to ruin, in this world or the next. Failure in the worldly sense cannot cancel the inner gain of sincere action. That is why Krishna insists in 3.8 that action, even imperfect, is better than inaction: the attempt itself is the practice.",
+    "procrastination": "The Gita treats inaction as a real choice with real consequences, not a neutral pause. Krishna tells Arjuna in 3.8 that action is better than inaction, and that even keeping the body alive requires action. In 6.5 he places responsibility squarely on the individual: you must lift yourself by your own mind, because the same mind that drags you down can become your friend. The Gita's answer to low motivation is not to wait for enthusiasm, but to act from duty without attachment, as 3.19 says, and to stand up from the slump, as Krishna told Arjuna in 2.3.",
+    "comparison": "Comparison is, in the Gita's language, measuring yourself by another person's dharma. Krishna's teaching in 3.35 is direct: your own path, even walked imperfectly, is better than someone else's walked well, because living another's path brings fear. In 18.48 he adds that every path has its flaws, as fire has smoke, so seeing faults in your own situation is no reason to abandon it. The person Krishna calls dear in 12.15 is free from the agitation and envy that comparison feeds; they are steady because they are not looking sideways.",
+    "anger": "The Gita gives one of the clearest maps of anger in any scripture. In 2.62 and 2.63 Krishna traces it back step by step: dwelling on something creates attachment, attachment becomes desire, frustrated desire becomes anger, and anger clouds memory and judgement until a person is ruined. So the Gita's remedy starts upstream, with what you allow your mind to dwell on. In 16.21 Krishna names desire, anger and greed as three gates to self-destruction, and in 5.23 he says the person who can withstand the surge of desire and anger in this very life is the one who is truly happy.",
+    "betrayal": "The Gita does not ask you to deny that you were wronged; its battlefield is full of real injustice. What it describes is an inner freedom that does not depend on the other person's behaviour. In chapter 12 Krishna lists the qualities of those dear to him: they bear ill will to no one, and are compassionate and forgiving (12.13), and they stay the same toward friend and enemy, in honour and insult (12.18). In 2.56 he describes the steady mind as free of anger and unshaken by sorrow. Forgiveness in this sense is not approval of what was done. It is refusing to let the injury keep ruling your mind.",
+    "grief": "The Bhagavad Gita begins in grief. Arjuna, overwhelmed by the thought of losing those he loves, lays down his bow and weeps, and Krishna's very first teaching is addressed to that sorrow (2.11). He tells Arjuna that the self in every being is never born and never dies (2.20). It passes through childhood, youth and old age, and on beyond the body (2.13), just as a person sets aside worn clothes for new ones (2.22). The Gita does not say grief is wrong. It says that what we truly love in a person is not destroyed with the body, and that understanding this can slowly steady a grieving heart.",
+    "illness-death": "Krishna speaks about the body with calm realism: whatever is born must die, and whatever dies will be born again, so we should not grieve over what cannot be avoided (2.27). Alongside this he points to what does not change. The self that passed through childhood and youth (2.13) is not killed when the body is (2.20). Pain and discomfort, he says in 2.14, come and go like heat and cold, and the wise endure them patiently. The Gita's counsel in illness is to act fully where action helps, and to rest the mind in the part of oneself that illness cannot touch.",
+    "dilemma": "The Gita itself is born of a dilemma. Arjuna stands between two duties, to his family and to his role as a warrior, and admits he no longer knows what is right (2.7). His first wise act is to say so and ask for guidance. Krishna later teaches that such knowledge is gained by approaching the wise with humility, sincere questions and service (4.34), and that one should choose according to one's own dharma rather than someone else's (3.35). Notably, after eighteen chapters of teaching, Krishna does not command Arjuna. He tells him to reflect fully and then decide (18.63). The Gita trusts a person to choose once they see clearly.",
+    "career": "The Gita has a clear view of work: each person has a svadharma, a duty that fits their own nature, and doing it, even imperfectly, is better than excelling at someone else's (3.35). Krishna adds that no work is free of flaws, just as no fire is free of smoke (18.48), so finding difficulties on your path is not by itself a reason to leave it. In 18.46 he says a person reaches perfection by offering their own work as worship. The Gita's test is not salary or status but fit and offering: work that matches who you are, done fully, without being driven by its rewards (2.47).",
+    "restless-mind": "Arjuna is honest about the mind: he says it is restless, turbulent and as hard to hold as the wind (6.34). Krishna agrees, and then gives a practical method: the mind is brought under control by abhyāsa, steady practice, and vairāgya, detachment (6.35). In 6.26 he describes the practice simply: whenever the mind wanders, bring it back, again and again, without drama. In 2.66 he explains why this matters: without a steady, focused mind there is no peace, and without peace there is no happiness.",
+    "balance": "The Gita is surprisingly practical about daily life. In 6.16 Krishna says yoga is not for those who eat too much or too little, or who sleep too much or too little. In 6.17 he describes the balanced person, moderate in food, recreation, effort at work, sleep and waking, and says that for them yoga destroys sorrow. In the Gita's view, exhaustion often comes not from work itself but from attachment to results. Verse 3.19 asks you to do what needs doing without that attachment, and 2.50 calls yoga 'skill in action': doing the right things well, rather than doing everything.",
+    "cravings": "Krishna names desire as the great enemy in 3.37: born of rajas, the restless quality, and never satisfied. In 2.62 he shows how it grows, from dwelling on something, to attachment, to craving. In 5.22 he points out that pleasures born of the senses have a beginning and an end and leave sorrow behind, which is why the wise do not delight in them. His image of freedom in 2.70 is the ocean: rivers keep pouring in, yet the ocean stays full and unmoved. Peace comes from letting desires arrive without being carried off by them, not from feeding each one.",
+    "loneliness": "The Gita offers deep reassurance to anyone who feels alone. In 5.29 Krishna calls himself suhṛdaṃ sarva-bhūtānām, the friend of all beings, and says that knowing this brings peace. In 9.22 he promises that for those who think of him with undivided devotion, he carries what they lack and protects what they have. At the same time, in 6.5 he asks each person to be their own friend, to lift themselves up and not let themselves sink. The Gita's answer to loneliness has these two sides: a divine friendship that is always present, and the duty to treat yourself with a friend's care.",
+    "guilt": "The Gita is strikingly merciful about past wrongs. In 4.36 Krishna says that even the worst wrongdoer can cross over every sin on the raft of knowledge. In 9.30 he says that even someone who has behaved very badly, if they turn to him with undivided devotion, should be regarded as good, because they have resolved rightly. In 6.40 he assures Arjuna that no one who does good ever comes to a bad end. His final words to Arjuna, in 18.66, are 'mā śucaḥ': do not grieve. In the Gita's view, guilt is meant to turn you toward a better resolve, not to hold you down.",
+    "ego": "The Gita traces ego to a simple mistake: actions are carried out by the qualities of nature, but the deluded mind thinks 'I am the doer' (3.27). Praise and blame both feed that mistake. Krishna describes the person dear to him as the same in honour and dishonour (12.18), and says in 2.71 that peace comes to the one who lives without 'mine' and without ego. In chapter 16 he lists arrogance, pride and conceit among the demonic qualities (16.4). The Gita's remedy is not self-hatred but a truer view: you are a participant in the work, not its owner.",
+    "self-doubt": "Krishna's first words to the doubting Arjuna rebuke his faint-heartedness: it does not suit you, stand up (2.3). He places the power to rise within the person: lift yourself by your own self, for your mind can be your friend or your enemy (6.5), and it becomes a friend once mastered (6.6). In 4.40 he warns that a mind consumed by doubt finds happiness neither in this world nor beyond. The Gita's cure for self-doubt is not reassurance but action joined with śraddhā, faith: acting before you feel ready, and letting the mind be trained into an ally.",
+    "family-conflict": "Family conflict is the setting of the whole Gita: the war is between cousins. Krishna's guidance for relationships is practical. In 17.15 he defines the discipline of speech: words that cause no distress, and that are truthful, pleasant and beneficial. In 6.32 he calls the highest yogi the one who feels others' joy and sorrow as their own. And in 12.15 he describes the person dear to him as one who neither troubles the world nor is troubled by it. Together these ask you to speak carefully, understand the other person deeply, and stay steady without needing to win.",
+    "leadership": "In chapter 3, Krishna explains why he keeps acting even though he needs nothing: people follow the example of those they look up to. 'Whatever a great person does, others follow,' he says in 3.21, and the standard they set becomes the world's. So the Gita asks leaders to work without attachment, doing what needs to be done (3.19), and to make their work an example of yoga, 'skill in action' (2.50). Leadership in the Gita is less about authority than about the quality of your own conduct, because that is what others will copy.",
+    "lost": "The Gita opens with a man who has completely lost his bearings, and it treats his confusion as the beginning of wisdom rather than a failure. Arjuna's turning point is 2.7, where he admits he does not know what is right and asks to be taught. Krishna's guidance for finding the way is steady: take up your own duty, however small, rather than someone else's (3.35); cultivate faith and practice, which lead to knowledge and peace (4.39); and offer your ordinary work as worship, which itself becomes the path to fulfilment (18.46). In the Gita, clarity comes through walking, not waiting.",
+    "greed": "In 16.21 Krishna lists greed, lobha, alongside desire and anger as the three gates to self-ruin. The problem with greed, in the Gita's view, is that it never reaches 'enough'. Its picture of contentment in 2.70 is the ocean, which stays full and still though rivers pour into it endlessly. In 2.71 Krishna says peace comes to the one who gives up cravings and lives without the sense of 'mine'. The Gita does not condemn earning; it condemns being ruled by wanting, which steals peace no matter how much is gained."
+  },
+  hinglish: {
+    "results-anxiety": "Yuddh ke maidan mein Arjun ki pareshaani asal mein result ki chinta hai: woh yuddh ke nateejon ki kalpana karke ruk jaate hain. Krishna unhe achhe result ka vaada nahi karte. Woh Arjun ka dhyaan us ek cheez par laate hain jo unke haath mein hai, yaani unka karm, aur kehte hain ki use phal se chipke bina karo (2.47). Yahi karm yog hai. 2.48 ki samata udaaseenta nahi hai; ye apna kaam itne achhe se karne mein doob jaana hai ki safalta aur asafalta aapko hila na sakein. Aur intezaar ke beech jo bhaavnayein aati hain, Krishna 2.14 mein kehte hain, woh sardi-garmi jaisi hain: sachchi, par aane-jaane waali, jinhe sehna hai, maanna nahi.",
+    "fear-failure": "Gita mein Arjun ka karm se inkaar samajhdaari jaisa lagta hai, par Krishna use saaf-saaf dil ki kamzori kehte hain (2.3). Unka ilaaj dar ki neenv hataana hai. 2.40 mein woh kehte hain ki is raaste par koi prayas bekaar nahi jaata aur thoda abhyaas bhi bade dar se bachaata hai, aur 6.40 mein Arjun ko bharosa dilaate hain ki achha karne waala na is lok mein barbaad hota hai na parlok mein. Duniya ki nazar mein asafalta bhi sachche karm ke andar ke laabh ko mita nahi sakti. Isliye 3.8 mein Krishna kehte hain ki adhoora karm bhi karm na karne se behtar hai: koshish khud hi abhyaas hai.",
+    "procrastination": "Gita karm na karne ko ek asli chunaav maanti hai jiske asli parinaam hote hain, koi khaali viraam nahi. 3.8 mein Krishna kehte hain ki karm na karne se karm karna behtar hai, aur shareer chalaane ke liye bhi karm chahiye. 6.5 mein woh zimmedaari seedhe insaan par rakhte hain: khud ko khud hi uthao, kyunki jo mann aapko neeche kheenchta hai wahi aapka dost bhi ban sakta hai. Gita ka jawaab josh ka intezaar karna nahi, balki 3.19 ke hisaab se bina aasakti ke kartavya karna hai, aur 2.3 ki tarah susti se uth khade hona hai.",
+    "comparison": "Gita ki bhaasha mein tulna ka matlab hai khud ko kisi aur ke dharm se naapna. 3.35 mein Krishna seedha kehte hain: apna raasta adhoora chalna bhi doosre ka raasta achhe se chalne se behtar hai, kyunki doosre ka raasta dar laata hai. 18.48 mein woh jodte hain ki har raaste mein kamiyaan hoti hain, jaise aag mein dhuaan, isliye apni sthiti mein kami dekh kar use chhodna theek nahi. 12.15 mein Krishna jise priya kehte hain woh us bechaini aur irshya se mukt hai jo tulna badhaati hai; woh sthir hai kyunki woh idhar-udhar nahi dekhta.",
+    "anger": "Gita gusse ka bahut saaf naksha deti hai. 2.62 aur 2.63 mein Krishna use kadam-kadam peeche le jaate hain: kisi cheez par baar-baar sochne se lagaav, lagaav se ichha, ruki hui ichha se gussa, aur gusse se smriti aur buddhi dhundhli hokar insaan ka patan. Isliye Gita ka ilaaj wahin se shuru hota hai jis par aap mann ko tikne dete ho. 16.21 mein Krishna kaam, krodh aur lobh ko khud ke naash ke teen darwaaze kehte hain, aur 5.23 mein kehte hain ki jo isi jeevan mein ichha aur krodh ke vega ko seh leta hai, wahi sachcha sukhi hai.",
+    "betrayal": "Gita ye nahi kehti ki aap maan lo ki aapke saath galat nahi hua; uska yuddh-kshetra asli anyaay se bhara hai. Woh ek aisi andar ki aazaadi bataati hai jo saamne waale ke vyavhaar par nirbhar nahi. Adhyay 12 mein Krishna apne priya logon ke gun ginaate hain: woh kisi se dvesh nahi rakhte, karuna aur kshama rakhte hain (12.13), aur dost-dushman, maan-apmaan mein ek jaise rehte hain (12.18). 2.56 mein sthir mann ko krodh se mukt aur dukh se na hilne waala bataaya gaya hai. Is arth mein maafi galat ko sahi maanna nahi hai; ye us chot ko apne mann par raaj karne se rokna hai.",
+    "grief": "Bhagavad Gita dukh se shuru hoti hai. Apno ko khone ke khayaal se Arjun dhanush rakh kar ro padte hain, aur Krishna ka pehla updesh usi shok ke liye hai (2.11). Woh kehte hain ki har praani ki aatma na janmti hai na marti hai (2.20); woh bachpan, jawaani aur budhape se guzarti hai aur shareer ke aage bhi jaati hai (2.13), jaise insaan purane kapde utaar kar naye pehenta hai (2.22). Gita ye nahi kehti ki dukh galat hai. Woh kehti hai ki kisi insaan mein jo hum sach mein pyaar karte hain, woh shareer ke saath nasht nahi hota, aur ye samajh dheere-dheere dukhi mann ko sambhaal sakti hai.",
+    "illness-death": "Krishna shareer ke baare mein shaant yathaarth se baat karte hain: jo janma hai woh marega, aur jo mara hai woh phir janmega, isliye anivaarya ka shok nahi karna chahiye (2.27). Saath hi woh us cheez ki taraf ishaara karte hain jo nahi badalti. Jo aatma bachpan aur jawaani se guzri (2.13), woh shareer ke marne par nahi marti (2.20). Dard aur takleef, 2.14 mein woh kehte hain, sardi-garmi ki tarah aate-jaate hain, aur gyaani unhe dhairya se sehte hain. Bimaari mein Gita ki salaah hai: jahaan karm madad kare wahaan poora karm karo, aur mann ko apne us hisse mein tikaao jise bimaari chhoo nahi sakti.",
+    "dilemma": "Gita khud ek dharm sankat se paida hui hai. Arjun do kartavyon ke beech khade hain, parivaar ke prati aur yoddha ke roop mein, aur maante hain ki unhe ab pata nahi ki sahi kya hai (2.7). Unka pehla samajhdaari bhara kadam yahi kehna aur margdarshan maangna hai. Baad mein Krishna sikhaate hain ki aisa gyaan vinamrata, sachche prashn aur seva ke saath gyaaniyon ke paas jaakar milta hai (4.34), aur ki apne dharm ke hisaab se chunna chahiye, kisi aur ke nahi (3.35). Dhyaan dene ki baat hai ki atharah adhyaay ke updesh ke baad bhi Krishna Arjun ko aadesh nahi dete; woh kehte hain poora vichaar karo, phir jaisa chaho karo (18.63). Gita bharosa karti hai ki saaf dekhne ke baad insaan khud chunega.",
+    "career": "Gita ka kaam ke baare mein saaf nazariya hai: har insaan ka ek svadharma hota hai, uske swabhav ke anukool kartavya, aur use adhoora karna bhi doosre ka kaam badhiya karne se behtar hai (3.35). Krishna jodte hain ki koi kaam kamiyon se khaali nahi, jaise koi aag dhuein se khaali nahi (18.48), isliye raaste mein mushkilein milna akele use chhodne ki wajah nahi. 18.46 mein woh kehte hain ki apne kaam ko pooja ki tarah arpan karke insaan siddhi paata hai. Gita ki kasauti salary ya status nahi, balki mel aur arpan hai: aisa kaam jo aapke swabhav se mile, poori tarah kiya jaaye, aur inaam ke liye na kiya jaaye (2.47).",
+    "restless-mind": "Arjun mann ke baare mein imaandaar hain: woh kehte hain ki mann chanchal, ashaant aur hawa jitna mushkil se pakadne waala hai (6.34). Krishna sehmat hote hain, aur phir vyavhaarik tareeka dete hain: mann abhyaas aur vairagya se vash mein aata hai (6.35). 6.26 mein woh abhyaas ko saral shabdon mein samjhaate hain: jab bhi mann bhatke, use waapas laao, baar-baar, bina hungaame ke. 2.66 mein woh bataate hain ki ye kyun zaroori hai: sthir mann ke bina shaanti nahi, aur shaanti ke bina sukh nahi.",
+    "balance": "Gita rozmarra ki zindagi ke baare mein kaafi vyavhaarik hai. 6.16 mein Krishna kehte hain ki yog na zyaada khaane waale ke liye hai na bahut kam khaane waale ke liye, na zyaada sone waale ke liye na bahut kam sone waale ke liye. 6.17 mein woh santulit insaan ka varnan karte hain, jo khaane, aaram, kaam ki mehnat, sone aur jaagne mein santulit hai, aur kehte hain ki uske liye yog dukh mita deta hai. Gita ke hisaab se thakaan aksar kaam se nahi, result se lagaav se aati hai; 3.19 kehta hai ki zaroori kaam bina aasakti ke karo, aur 2.50 yog ko 'karm mein kushalta' kehta hai, yaani sab kuch nahi, sahi cheezein achhe se karna.",
+    "cravings": "3.37 mein Krishna ichha ko sabse bada dushman kehte hain: rajogun se paida, aur kabhi tript na hone waali. 2.62 mein woh dikhaate hain ki ye kaise badhti hai: kisi cheez par sochne se lagaav, aur lagaav se laalsa. 5.22 mein woh bataate hain ki indriyon se milne waale sukh shuru aur khatam hote hain aur peeche dukh chhod jaate hain, isliye gyaani unme nahi ramte. 2.70 mein unki aazaadi ki tasveer samudra hai: nadiyaan lagaataar girti hain, phir bhi samudra bhara aur shaant rehta hai. Shaanti har ichha ko poora karne se nahi, ichhaon ko aane dene aur unke saath na beh jaane se aati hai.",
+    "loneliness": "Gita akelapan mehsoos karne waale ko gehra bharosa deti hai. 5.29 mein Krishna khud ko suhṛdaṃ sarva-bhūtānām, yaani sab praaniyon ka mitra kehte hain, aur kehte hain ki ye jaanne se shaanti milti hai. 9.22 mein woh vaada karte hain ki jo ananya bhaav se unhe yaad karte hain, unki kami woh poori karte hain aur jo unke paas hai uski raksha karte hain. Saath hi 6.5 mein woh har insaan se kehte hain ki apne dost bano, khud ko uthao aur girne mat do. Akelepan ka Gita ka jawaab do taraf se hai: ek divya dosti jo hamesha maujood hai, aur khud ke saath dost jaisa vyavhaar karne ka kartavya.",
+    "guilt": "Purani galtiyon ke baare mein Gita bahut dayaalu hai. 4.36 mein Krishna kehte hain ki sabse bada paapi bhi gyaan ki naav se saare paap paar kar sakta hai. 9.30 mein woh kehte hain ki bahut bura aacharan karne waala bhi agar ananya bhakti se unki taraf mude, toh use achha maanna chahiye, kyunki usne sahi nishchay kiya hai. 6.40 mein woh bharosa dilaate hain ki achha karne waala kabhi buri gati ko nahi jaata. Arjun se unke aakhri shabd 18.66 mein hain: 'mā śucaḥ', shok mat karo. Gita ke hisaab se pachhtava aapko behtar nishchay ki taraf modne ke liye hai, dabaane ke liye nahi.",
+    "ego": "Gita ahankaar ko ek saadi galti maanti hai: karm prakriti ke gunon se hote hain, par bhatka hua mann sochta hai 'main karta hoon' (3.27). Taareef aur aalochana dono isi galti ko badhaate hain. Krishna apne priya ko maan aur apmaan mein samaan bataate hain (12.18), aur 2.71 mein kehte hain ki shaanti use milti hai jo 'mera' aur ahankaar ke bina jeeta hai. Adhyay 16 mein ghamand, darp aur abhimaan aasuri gunon mein gine gaye hain (16.4). Gita ka ilaaj khud se nafrat nahi, balki sahi nazariya hai: aap kaam mein bhaagidaar ho, uske maalik nahi.",
+    "self-doubt": "Shak se bhare Arjun se Krishna ke pehle shabd unki kamzori par daant hain: ye tumhe shobha nahi deti, khade ho jao (2.3). Woh uthne ki shakti insaan ke andar rakhte hain: khud ko khud se uthao, kyunki mann dost bhi ho sakta hai aur dushman bhi (6.5), aur jeet lene par woh dost ban jaata hai (6.6). 4.40 mein woh chetaate hain ki shak mein dooba mann na is lok mein sukh paata hai na parlok mein. Gita mein khud par shak ka ilaaj tasalli nahi, balki shraddha ke saath karm hai: taiyaar mehsoos karne se pehle karm karna, aur mann ko dheere-dheere apna saathi banaana.",
+    "family-conflict": "Poori Gita ki prishthbhoomi hi parivaar ka takraav hai: yuddh chachere bhaiyon ke beech hai. Rishton ke liye Krishna ki salaah vyavhaarik hai. 17.15 mein woh vaani ka tap bataate hain: aise shabd jo pareshaan na karein, aur jo sach, priya aur hitkari hon. 6.32 mein woh sabse shreshth yogi use kehte hain jo doosron ke sukh-dukh ko apna samjhe. Aur 12.15 mein unka priya woh hai jo na duniya ko pareshaan karta hai na usse pareshaan hota hai. Ye milkar aapse sambhal kar bolne, saamne waale ko gehraai se samajhne, aur jeetne ki zid ke bina sthir rehne ko kehte hain.",
+    "leadership": "Adhyay 3 mein Krishna khud samjhaate hain ki unhe kuch nahi chahiye phir bhi woh karm kyun karte hain: log unka anusaran karte hain jinhe woh bada maante hain. 3.21 mein woh kehte hain, 'shreshth vyakti jo karta hai, baaki wahi karte hain', aur jo maapdand woh banata hai, duniya usi par chalti hai. Isliye Gita netaon se bina aasakti ke zaroori kaam karne (3.19) aur apne kaam ko yog, yaani 'karm mein kushalta' (2.50), ka udaharan banaane ko kehti hai. Gita mein netritva adhikaar se zyaada apne aacharan ki gunvatta hai, kyunki doosre wahi apnaate hain.",
+    "lost": "Gita ek aise insaan se shuru hoti hai jo poori tarah raasta kho chuka hai, aur woh uski uljhan ko asafalta nahi, gyaan ki shuruaat maanti hai. Arjun ka mod 2.7 hai, jahaan woh maante hain ki unhe nahi pata sahi kya hai aur seekhna maangte hain. Raasta dhoondhne ke liye Krishna ki salaah sthir hai: apna kartavya uthao, chahe chhota ho, kisi aur ka nahi (3.35); shraddha aur abhyaas badhaao, jo gyaan aur shaanti tak le jaate hain (4.39); aur apne roz ke kaam ko pooja ki tarah arpan karo, jo khud siddhi ka raasta ban jaata hai (18.46). Gita mein spashtata chalne se aati hai, intezaar se nahi.",
+    "greed": "16.21 mein Krishna lobh ko kaam aur krodh ke saath khud ke naash ke teen darwaazon mein ginte hain. Gita ki nazar mein lobh ki dikkat ye hai ki woh kabhi 'kaafi' tak nahi pahunchta. Santosh ki uski tasveer 2.70 ka samudra hai, jo nadiyon ke lagaataar girne par bhi bhara aur shaant rehta hai. 2.71 mein woh kehte hain ki shaanti use milti hai jo laalsa chhod kar 'mera' ke bina jeeta hai. Gita kamaane ki ninda nahi karti; woh chaah ka ghulaam banne ki ninda karti hai, jo kitna bhi mil jaaye, shaanti chheen leti hai."
+  }
+};
+UI.en.teaching = "What the Gita teaches here"; UI.hinglish.teaching = "Gita yahaan kya sikhaati hai"; UI.hi.teaching = "गीता यहाँ क्या सिखाती है";
+UI.en.inGita = "In the Gita:"; UI.hinglish.inGita = "Gita mein:"; UI.hi.inGita = "गीता में:";
+UI.en.why = "Why:"; UI.hinglish.why = "Kyun:"; UI.hi.why = "क्यों:";
+EXAMPLE_TURN.a.teaching = TEACH.en["results-anxiety"];
+
 function matchTopics(q) {
   const words = q.toLowerCase().replace(/[^a-z\s'-]/g, " ").split(/\s+/).filter(w => w.length >= 3 && !STOP.has(w));
   const scored = TOPICS.map(tp => {
@@ -1074,7 +1190,7 @@ async function callApi(msgs) {
         "content-type": "application/json",
         "anthropic-dangerous-direct-browser-access": "true"
       },
-      body: JSON.stringify({ model: getModel(), max_tokens: 3000, system, messages })
+      body: JSON.stringify({ model: getModel(), max_tokens: 6000, system, messages })
     });
   } catch (e) { throw { code: "network" }; }
   let data = null;
