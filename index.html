@@ -137,6 +137,7 @@ body.no-sa .sa, body.no-sa .iast { display: none; }
 .context { margin: 0; font-size: 15px; color: var(--muted); background: rgba(218, 211, 250, .45); border-radius: 8px; padding: 8px 12px; }
 .context b { color: var(--krishna); font-weight: 600; }
 .teaching { margin: 0; max-width: 68ch; line-height: 1.7; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+.signoff { margin: 4px 0 0; font-family: var(--font-display); font-size: 20px; color: var(--lotus); }
 .why { display: block; color: var(--muted); font-size: 15px; margin-top: 2px; }
 .why b { font-weight: 600; color: var(--peacock); }
 .applies { margin: 0; font-size: 16px; padding-top: 10px; border-top: 1px dashed var(--line); }
@@ -711,6 +712,7 @@ function renderAnswer(a, idx) {
   }
   if (a.reflection) html += `<p class="reflection"><span class="tag">${LOTUS}${L.reflect}</span>${esc(a.reflection)}</p>`;
   if (a.limits) html += `<p class="limits">${esc(a.limits)}</p>`;
+  html += `<p class="signoff">masti nahi rukni chahiye :)</p>`;
   wrap.innerHTML = html;
   return wrap;
 }
@@ -775,6 +777,7 @@ function answerAsText(turn) {
   if ((a.steps || []).length) { lines.push(L.steps + ":"); a.steps.forEach((s, i) => lines.push(`${i + 1}. ${s.do} (${s.ref})` + (s.why ? `
    ${L.why} ${s.why}` : ""))); lines.push(""); }
   if (a.reflection) lines.push(L.reflect + ": " + a.reflection);
+  lines.push("", "masti nahi rukni chahiye :)");
   return lines.filter((l, i, arr) => !(l === "" && arr[i - 1] === "")).join("\n");
 }
 
